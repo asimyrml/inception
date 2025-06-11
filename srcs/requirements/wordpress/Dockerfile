@@ -1,9 +1,12 @@
 FROM debian:bullseye
 
 RUN apt-get update && \
-    apt-get install -y php php-mysql curl mariadb-client unzip && \
+    apt-get install -y php7.4 php7.4-fpm php7.4-mysql curl mariadb-client unzip && \
     mkdir -p /run/php && \
     apt-get clean
+
+# FPM dışarıdan erişilebilir olmalı
+RUN sed -i 's|listen = .*|listen = 0.0.0.0:9000|' /etc/php/7.4/fpm/pool.d/www.conf
 
 RUN mkdir -p /var/www/html
 
@@ -19,4 +22,4 @@ WORKDIR /var/www/html
 
 EXPOSE 9000
 
-ENTRYPOINT ["php", "-S", "0.0.0.0:9000", "-t", "/var/www/html"]
+CMD ["php-fpm7.4", "-F"]

@@ -1,22 +1,12 @@
 FROM debian:bullseye
 
 RUN apt-get update && \
-    apt-get install -y mariadb-server && \
+    apt-get install -y mariadb-server bash && \
     apt-get clean
 
-COPY tools/ /docker-entrypoint-initdb.d/
+COPY tools/ /tools/
+RUN chmod +x /tools/setup.sh
 
 VOLUME /var/lib/mysql
 
-CMD ["mysqld_safe"]
-FROM debian:bullseye
-
-RUN apt-get update && \
-    apt-get install -y mariadb-server && \
-    apt-get clean
-
-COPY tools/ /docker-entrypoint-initdb.d/
-
-VOLUME /var/lib/mysql
-
-CMD ["mysqld_safe"]
+ENTRYPOINT ["bash", "/tools/setup.sh"]
